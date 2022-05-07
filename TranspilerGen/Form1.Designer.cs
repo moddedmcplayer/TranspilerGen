@@ -1,4 +1,9 @@
-﻿namespace TranspilerGen
+﻿using System;
+using System.Linq;
+using System.Reflection;
+using TranspilerGen.Info;
+
+namespace TranspilerGen
 {
     partial class Form1
     {
@@ -21,6 +26,39 @@
             base.Dispose(disposing);
         }
 
+        public void HideAll()
+        {
+            this.LetterSelector.Visible = false;
+            this.ClassSelector.Visible = false;
+            this.MethodSelector.Visible = false;
+        }
+        
+        public void ShowCharacters()
+        {
+            this.LetterSelector.Items.Clear();
+            this.LetterSelector.Visible = true;
+            this.LetterSelector.Items.AddRange(Program.SelectorHandler.getLetters().ToArray());
+        }
+
+        public void ShowClasses()
+        {
+            if (!this.LetterSelector.Visible)
+                return;
+            this.ClassSelector.Items.Clear();
+            this.ClassSelector.Visible = true;
+            this.ClassSelector.Items.AddRange(Program.SelectorHandler.getClasses(this.LetterSelector.SelectedItem.ToString()[0]));
+        }
+
+        public void ShowMethods()
+        {
+            if (!this.ClassSelector.Visible)
+                return;
+            this.MethodSelector.Items.Clear();
+            this.MethodSelector.Items.AddRange(Program.SelectorHandler.getMethods((TypeInfo)this.ClassSelector.SelectedItem));
+            this.MethodSelector.Visible = true;
+            GenInfo.Class = (TypeInfo) this.ClassSelector.SelectedItem;
+        }
+
         #region Windows Form Designer generated code
 
         /// <summary>
@@ -38,33 +76,39 @@
             this.ModifiedSlectorLabel = new System.Windows.Forms.Label();
             this.BrowseButton2 = new System.Windows.Forms.Button();
             this.BrowseButton1 = new System.Windows.Forms.Button();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.EnterPath2Caption = new System.Windows.Forms.Label();
+            this.EnterPath1Caption = new System.Windows.Forms.Label();
+            this.ClassSelector = new System.Windows.Forms.ComboBox();
+            this.LetterSelector = new System.Windows.Forms.ComboBox();
+            this.MethodSelector = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
             // Startbutton
             // 
             this.Startbutton.Font = new System.Drawing.Font("Microsoft Sans Serif", 20.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
-            this.Startbutton.Location = new System.Drawing.Point(318, 363);
+            this.Startbutton.Location = new System.Drawing.Point(318, 389);
             this.Startbutton.Name = "Startbutton";
             this.Startbutton.Size = new System.Drawing.Size(148, 49);
             this.Startbutton.TabIndex = 0;
             this.Startbutton.Text = "Start";
             this.Startbutton.UseVisualStyleBackColor = true;
+            this.Startbutton.Click += new System.EventHandler(this.Startbutton_Click);
             // 
             // progressBar1
             // 
-            this.progressBar1.Location = new System.Drawing.Point(166, 307);
+            this.progressBar1.Location = new System.Drawing.Point(160, 343);
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(463, 40);
             this.progressBar1.TabIndex = 2;
             // 
             // FilePathTextbox2
             // 
-            this.FilePathTextbox2.Location = new System.Drawing.Point(145, 175);
+            this.FilePathTextbox2.Location = new System.Drawing.Point(145, 192);
             this.FilePathTextbox2.Name = "FilePathTextbox2";
             this.FilePathTextbox2.Size = new System.Drawing.Size(358, 20);
             this.FilePathTextbox2.TabIndex = 3;
             this.FilePathTextbox2.Text = "Enter path";
+            this.FilePathTextbox2.TextChanged += new System.EventHandler(this.FilePathTextbox2_TextChanged);
             // 
             // FilePathTextbox1
             // 
@@ -73,6 +117,7 @@
             this.FilePathTextbox1.Size = new System.Drawing.Size(358, 20);
             this.FilePathTextbox1.TabIndex = 4;
             this.FilePathTextbox1.Text = "Enter path";
+            this.FilePathTextbox1.TextChanged += new System.EventHandler(this.FilePathTextbox1_TextChanged);
             // 
             // Title
             // 
@@ -85,7 +130,7 @@
             // 
             // OriginalFileSelectorLabel
             // 
-            this.OriginalFileSelectorLabel.Location = new System.Drawing.Point(160, 110);
+            this.OriginalFileSelectorLabel.Location = new System.Drawing.Point(160, 107);
             this.OriginalFileSelectorLabel.Name = "OriginalFileSelectorLabel";
             this.OriginalFileSelectorLabel.Size = new System.Drawing.Size(61, 12);
             this.OriginalFileSelectorLabel.TabIndex = 6;
@@ -93,7 +138,7 @@
             // 
             // ModifiedSlectorLabel
             // 
-            this.ModifiedSlectorLabel.Location = new System.Drawing.Point(160, 158);
+            this.ModifiedSlectorLabel.Location = new System.Drawing.Point(160, 175);
             this.ModifiedSlectorLabel.Name = "ModifiedSlectorLabel";
             this.ModifiedSlectorLabel.Size = new System.Drawing.Size(72, 14);
             this.ModifiedSlectorLabel.TabIndex = 7;
@@ -101,12 +146,13 @@
             // 
             // BrowseButton2
             // 
-            this.BrowseButton2.Location = new System.Drawing.Point(499, 175);
+            this.BrowseButton2.Location = new System.Drawing.Point(499, 192);
             this.BrowseButton2.Name = "BrowseButton2";
             this.BrowseButton2.Size = new System.Drawing.Size(61, 20);
             this.BrowseButton2.TabIndex = 8;
             this.BrowseButton2.Text = "Browse";
             this.BrowseButton2.UseVisualStyleBackColor = true;
+            this.BrowseButton2.Click += new System.EventHandler(this.BrowseButton2_Click);
             // 
             // BrowseButton1
             // 
@@ -116,14 +162,62 @@
             this.BrowseButton1.TabIndex = 9;
             this.BrowseButton1.Text = "Browse";
             this.BrowseButton1.UseVisualStyleBackColor = true;
+            this.BrowseButton1.Click += new System.EventHandler(this.BrowseButton1_Click);
             // 
-            // comboBox1
+            // EnterPath2Caption
             // 
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(238, 240);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(264, 21);
-            this.comboBox1.TabIndex = 10;
+            this.EnterPath2Caption.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.EnterPath2Caption.Location = new System.Drawing.Point(145, 215);
+            this.EnterPath2Caption.Name = "EnterPath2Caption";
+            this.EnterPath2Caption.Size = new System.Drawing.Size(294, 17);
+            this.EnterPath2Caption.TabIndex = 11;
+            this.EnterPath2Caption.Text = "Waiting for input";
+            // 
+            // EnterPath1Caption
+            // 
+            this.EnterPath1Caption.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.EnterPath1Caption.Location = new System.Drawing.Point(145, 144);
+            this.EnterPath1Caption.Name = "EnterPath1Caption";
+            this.EnterPath1Caption.Size = new System.Drawing.Size(294, 14);
+            this.EnterPath1Caption.TabIndex = 12;
+            this.EnterPath1Caption.Text = "Waiting for input";
+            // 
+            // ClassSelector
+            // 
+            this.ClassSelector.AllowDrop = true;
+            this.ClassSelector.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.ClassSelector.FormattingEnabled = true;
+            this.ClassSelector.Location = new System.Drawing.Point(310, 271);
+            this.ClassSelector.Name = "ClassSelector";
+            this.ClassSelector.Size = new System.Drawing.Size(184, 24);
+            this.ClassSelector.TabIndex = 13;
+            this.ClassSelector.Visible = false;
+            this.ClassSelector.SelectedIndexChanged += new System.EventHandler(this.ClassSelector_SelectedIndexChanged);
+            // 
+            // LetterSelector
+            // 
+            this.LetterSelector.AllowDrop = true;
+            this.LetterSelector.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.LetterSelector.FormattingEnabled = true;
+            this.LetterSelector.Location = new System.Drawing.Point(252, 271);
+            this.LetterSelector.Name = "LetterSelector";
+            this.LetterSelector.Size = new System.Drawing.Size(40, 24);
+            this.LetterSelector.Sorted = true;
+            this.LetterSelector.TabIndex = 14;
+            this.LetterSelector.Visible = false;
+            this.LetterSelector.SelectedIndexChanged += new System.EventHandler(this.LetterSelector_SelectedIndexChanged);
+            // 
+            // MethodSelector
+            // 
+            this.MethodSelector.AllowDrop = true;
+            this.MethodSelector.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
+            this.MethodSelector.FormattingEnabled = true;
+            this.MethodSelector.Location = new System.Drawing.Point(307, 301);
+            this.MethodSelector.Name = "MethodSelector";
+            this.MethodSelector.Size = new System.Drawing.Size(187, 24);
+            this.MethodSelector.TabIndex = 15;
+            this.MethodSelector.Visible = false;
+            this.MethodSelector.SelectedIndexChanged += new System.EventHandler(this.MethodSelector_SelectedIndexChanged);
             // 
             // Form1
             // 
@@ -131,7 +225,11 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.comboBox1);
+            this.Controls.Add(this.MethodSelector);
+            this.Controls.Add(this.LetterSelector);
+            this.Controls.Add(this.ClassSelector);
+            this.Controls.Add(this.EnterPath1Caption);
+            this.Controls.Add(this.EnterPath2Caption);
             this.Controls.Add(this.BrowseButton1);
             this.Controls.Add(this.BrowseButton2);
             this.Controls.Add(this.ModifiedSlectorLabel);
@@ -143,11 +241,17 @@
             this.Controls.Add(this.Startbutton);
             this.Location = new System.Drawing.Point(15, 15);
             this.Name = "Form1";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
         }
 
-        private System.Windows.Forms.ComboBox comboBox1;
+        private System.Windows.Forms.ComboBox ClassSelector;
+        private System.Windows.Forms.ComboBox LetterSelector;
+        private System.Windows.Forms.ComboBox MethodSelector;
+
+        private System.Windows.Forms.Label EnterPath2Caption;
+        private System.Windows.Forms.Label EnterPath1Caption;
 
         private System.Windows.Forms.Label OriginalFileSelectorLabel;
         private System.Windows.Forms.Label ModifiedSlectorLabel;
