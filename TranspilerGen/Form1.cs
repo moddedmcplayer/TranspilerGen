@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Windows.Forms;
+using Mono.Reflection;
 using TranspilerGen.Info;
 
 namespace TranspilerGen
@@ -42,7 +44,7 @@ namespace TranspilerGen
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            //ignore
+            //ignore lol
         }
 
         private void FilePathTextbox1_TextChanged(object sender, EventArgs e)
@@ -69,6 +71,10 @@ namespace TranspilerGen
             DialogResult result = openFileDialog1.ShowDialog();
             if (result == DialogResult.OK)
             {
+                if(openFileDialog1.FileName == FilePathTextbox2.Text)
+                {
+                    throw new ArgumentException();
+                }
                 FilePathTextbox1.Text = openFileDialog1.FileName;
             }
         }
@@ -80,6 +86,10 @@ namespace TranspilerGen
             DialogResult result = openFileDialog2.ShowDialog();
             if (result == DialogResult.OK)
             {
+                if(openFileDialog2.FileName == FilePathTextbox1.Text)
+                {
+                    throw new ArgumentException();
+                }
                 FilePathTextbox2.Text = openFileDialog2.FileName;
             }
         }
@@ -91,12 +101,59 @@ namespace TranspilerGen
 
         private void MethodSelector_SelectedIndexChanged(object sender, EventArgs e)
         {
-            GenInfo.Method = (MethodInfo)this.MethodSelector.SelectedItem;
+            GenInfo.Method = Program.SelectorHandler.methods[this.MethodSelector.SelectedIndex];
+            this.reload.Visible = true;
         }
 
         private void ClassSelector_SelectedIndexChanged(object sender, EventArgs e)
         {
             ShowMethods();
+        }
+        
+        private void SaveButton_Click(object sender, EventArgs e)
+        {
+            if (!File.Exists("Config.txt"))
+                File.Create("Config.txt");
+            TextWriter tw = new StreamWriter("Config.txt");
+            
+            if(GenInfo.IsValid())
+            {
+                tw.WriteLine(this.FilePathTextbox1.Text);
+                tw.WriteLine(this.FilePathTextbox2.Text);
+                tw.WriteLine(this.LetterSelector.SelectedItem);
+                tw.WriteLine(Program.SelectorHandler.types[this.ClassSelector.SelectedIndex].FullName);
+                tw.WriteLine(Program.SelectorHandler.methods[this.MethodSelector.SelectedIndex].Name);
+            }
+            
+            tw.Close();
+        }
+
+        private void LoadButton_Click(object sender, EventArgs e)
+        {
+            TextReader tr = new StreamReader("Config.txt");
+            
+            string FilePath1 = tr.ReadLine();
+            string FilePath2 = tr.ReadLine();
+            string Letter = tr.ReadLine();
+            string ClassStr = tr.ReadLine();
+            string Method = tr.ReadLine();
+
+            this.FilePathTextbox1.Text = FilePath1;
+            this.FilePathTextbox2.Text = FilePath2;
+            this.LetterSelector.SelectedItem = Letter;
+            this.ClassSelector.SelectedIndex = Program.SelectorHandler.types.IndexOf(GenInfo.ModdedAssembly.GetType(ClassStr).GetTypeInfo());
+            this.MethodSelector.SelectedIndex = Program.SelectorHandler.methods.IndexOf(GenInfo.ModdedAssembly.GetType(ClassStr).GetMethod(Method));
+
+            tr.Close();
+        }
+
+        // show IL button
+        private void button1_Click(object sender, EventArgs e)
+        {
+            foreach (var inst in GenInfo.Method.GetInstructions())
+            {
+                Program.PrintConsole(inst.ToString());
+            }
         }
     }
 }

@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.Windows.Forms;
+using Mono.Reflection;
+using TranspilerGen.ILInterface;
 using TranspilerGen.Info;
 
 namespace TranspilerGen.Handlers
@@ -10,9 +13,15 @@ namespace TranspilerGen.Handlers
         {
             if (GenInfo.IsValid())
             {
-                API.ExtractIL.getDifference(
-                    GenInfo.OriginalFile.GetType(GenInfo.Class.FullName).GetMethod(GenInfo.Method.Name),
-                    GenInfo.Method);
+                var newIL = IILExtractor.GetNew(
+                    GenInfo.Method.GetInstructions().ToList(),
+                    GenInfo.proxy.GetInstructions(GenInfo.Class.FullName, GenInfo.Method.Name).ToList()
+                    );
+                foreach (var il in newIL)
+                {
+                    Program.PrintConsole($"{il.Key}");
+                    Program.PrintConsole(il.Value.ToString());
+                }
             }
         }
     }

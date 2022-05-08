@@ -13,38 +13,38 @@ namespace TranspilerGen.Handlers
         public List<string> getLetters()
         {
             List<string> collection = new List<string>();
-            foreach (var type in GenInfo.ModdedFile.GetTypes())
+            foreach (var type in GenInfo.ModdedAssembly.GetTypes())
             {
-                if(!collection.Contains(type.Name[0].ToString()))
-                    collection.Add(type.Name[0].ToString());
+                if(!collection.Contains(type.Name[0].ToString().ToUpper()))
+                    collection.Add(type.Name[0].ToString().ToUpper());
             }
             return collection;
         }
         
-        public TypeInfo[] getClasses(char character)
+        public string[] getClasses(char character)
         {
             types = new List<TypeInfo>();
-            foreach (var type in GenInfo.ModdedFile.GetTypes().Where(x => x.Name[0] == character))
+            foreach (var type in GenInfo.ModdedAssembly.GetTypes().Where(x => x.FullName[0].ToString().ToUpper() == character.ToString().ToUpper()))
             {
                 if(!types.Contains(type.GetTypeInfo()))
                 {
                     types.Add(type.GetTypeInfo());
                 }
             }
-            return types.ToArray();
+            return types.ConvertAll(x => x.FullName).ToArray();
         }
         
-        public MethodInfo[] getMethods(TypeInfo type)
+        public string[] getMethods(TypeInfo type)
         {
             methods = new List<MethodInfo>();
-            foreach (var method in type.DeclaredMethods)
+            foreach (var method in type.GetMethods())
             {
                 if(!methods.Contains(method))
                 {
                     methods.Add(method);
                 }
             }
-            return methods.ToArray();
+            return methods.ConvertAll(x => x.ToString()).ToArray();
         }
     }
 }

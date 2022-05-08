@@ -31,6 +31,7 @@ namespace TranspilerGen
             this.LetterSelector.Visible = false;
             this.ClassSelector.Visible = false;
             this.MethodSelector.Visible = false;
+            this.reload.Visible = false;
         }
         
         public void ShowCharacters()
@@ -54,9 +55,9 @@ namespace TranspilerGen
             if (!this.ClassSelector.Visible)
                 return;
             this.MethodSelector.Items.Clear();
-            this.MethodSelector.Items.AddRange(Program.SelectorHandler.getMethods((TypeInfo)this.ClassSelector.SelectedItem));
+            this.MethodSelector.Items.AddRange(Program.SelectorHandler.getMethods(GenInfo.ModdedAssembly.GetType((string)this.ClassSelector.SelectedItem).GetTypeInfo()));
             this.MethodSelector.Visible = true;
-            GenInfo.Class = (TypeInfo) this.ClassSelector.SelectedItem;
+            GenInfo.Class = Program.SelectorHandler.types[this.ClassSelector.SelectedIndex];
         }
 
         #region Windows Form Designer generated code
@@ -81,6 +82,9 @@ namespace TranspilerGen
             this.ClassSelector = new System.Windows.Forms.ComboBox();
             this.LetterSelector = new System.Windows.Forms.ComboBox();
             this.MethodSelector = new System.Windows.Forms.ComboBox();
+            this.SaveButton = new System.Windows.Forms.Button();
+            this.LoadButton = new System.Windows.Forms.Button();
+            this.reload = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // Startbutton
@@ -187,9 +191,9 @@ namespace TranspilerGen
             this.ClassSelector.AllowDrop = true;
             this.ClassSelector.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.ClassSelector.FormattingEnabled = true;
-            this.ClassSelector.Location = new System.Drawing.Point(310, 271);
+            this.ClassSelector.Location = new System.Drawing.Point(206, 271);
             this.ClassSelector.Name = "ClassSelector";
-            this.ClassSelector.Size = new System.Drawing.Size(184, 24);
+            this.ClassSelector.Size = new System.Drawing.Size(399, 24);
             this.ClassSelector.TabIndex = 13;
             this.ClassSelector.Visible = false;
             this.ClassSelector.SelectedIndexChanged += new System.EventHandler(this.ClassSelector_SelectedIndexChanged);
@@ -199,7 +203,7 @@ namespace TranspilerGen
             this.LetterSelector.AllowDrop = true;
             this.LetterSelector.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.LetterSelector.FormattingEnabled = true;
-            this.LetterSelector.Location = new System.Drawing.Point(252, 271);
+            this.LetterSelector.Location = new System.Drawing.Point(160, 271);
             this.LetterSelector.Name = "LetterSelector";
             this.LetterSelector.Size = new System.Drawing.Size(40, 24);
             this.LetterSelector.Sorted = true;
@@ -212,12 +216,43 @@ namespace TranspilerGen
             this.MethodSelector.AllowDrop = true;
             this.MethodSelector.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte) (0)));
             this.MethodSelector.FormattingEnabled = true;
-            this.MethodSelector.Location = new System.Drawing.Point(307, 301);
+            this.MethodSelector.Location = new System.Drawing.Point(206, 301);
             this.MethodSelector.Name = "MethodSelector";
-            this.MethodSelector.Size = new System.Drawing.Size(187, 24);
+            this.MethodSelector.Size = new System.Drawing.Size(399, 24);
             this.MethodSelector.TabIndex = 15;
             this.MethodSelector.Visible = false;
             this.MethodSelector.SelectedIndexChanged += new System.EventHandler(this.MethodSelector_SelectedIndexChanged);
+            // 
+            // SaveButton
+            // 
+            this.SaveButton.Location = new System.Drawing.Point(664, 127);
+            this.SaveButton.Name = "SaveButton";
+            this.SaveButton.Size = new System.Drawing.Size(62, 30);
+            this.SaveButton.TabIndex = 16;
+            this.SaveButton.Text = "Save";
+            this.SaveButton.UseVisualStyleBackColor = true;
+            this.SaveButton.Click += new System.EventHandler(this.SaveButton_Click);
+            // 
+            // LoadButton
+            // 
+            this.LoadButton.Location = new System.Drawing.Point(664, 185);
+            this.LoadButton.Name = "LoadButton";
+            this.LoadButton.Size = new System.Drawing.Size(62, 27);
+            this.LoadButton.TabIndex = 17;
+            this.LoadButton.Text = "Load";
+            this.LoadButton.UseVisualStyleBackColor = true;
+            this.LoadButton.Click += new System.EventHandler(this.LoadButton_Click);
+            // 
+            // reload
+            // 
+            this.reload.Location = new System.Drawing.Point(665, 235);
+            this.reload.Name = "reload";
+            this.reload.Size = new System.Drawing.Size(60, 36);
+            this.reload.TabIndex = 18;
+            this.reload.Text = "Show IL\r\n";
+            this.reload.UseVisualStyleBackColor = true;
+            this.reload.Visible = false;
+            this.reload.Click += new System.EventHandler(this.button1_Click);
             // 
             // Form1
             // 
@@ -225,6 +260,9 @@ namespace TranspilerGen
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Control;
             this.ClientSize = new System.Drawing.Size(800, 450);
+            this.Controls.Add(this.reload);
+            this.Controls.Add(this.LoadButton);
+            this.Controls.Add(this.SaveButton);
             this.Controls.Add(this.MethodSelector);
             this.Controls.Add(this.LetterSelector);
             this.Controls.Add(this.ClassSelector);
@@ -245,6 +283,11 @@ namespace TranspilerGen
             this.ResumeLayout(false);
             this.PerformLayout();
         }
+
+        private System.Windows.Forms.Button reload;
+
+        private System.Windows.Forms.Button SaveButton;
+        private System.Windows.Forms.Button LoadButton;
 
         private System.Windows.Forms.ComboBox ClassSelector;
         private System.Windows.Forms.ComboBox LetterSelector;
