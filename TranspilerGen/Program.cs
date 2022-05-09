@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Mono.Reflection;
 using TranspilerGen.Handlers;
+using TranspilerGen.ILInterface;
 using TranspilerGen.Info;
 
 namespace TranspilerGen
@@ -30,11 +34,16 @@ namespace TranspilerGen
         private static bool hasConsole = false;
         public static void PrintConsole(string txt)
         {
+            allocConsole();
+            Console.WriteLine(txt);
+        }
+
+        public static void allocConsole()
+        {
             if (!hasConsole)
             {
                 AllocConsole();
             }
-            Console.WriteLine(txt);
         }
 
         public static string GetFileName(this string input)
@@ -62,7 +71,7 @@ namespace TranspilerGen
         {
             GenInfo.OriginalFile = AppDomain.CreateDomain("Original");
             GenInfo.proxy = (ProxyDomain)GenInfo.OriginalFile.CreateInstanceAndUnwrap(Assembly.GetExecutingAssembly().FullName, typeof(ProxyDomain).FullName);
-            
+
             ButtonHandler = new ButtonHandler();
             SelectorHandler = new SelectorHandler();
             TextBoxHandler = new TextBoxHandler();

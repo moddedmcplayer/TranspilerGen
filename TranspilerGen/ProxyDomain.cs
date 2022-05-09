@@ -17,8 +17,8 @@ public class ProxyDomain : MarshalByRefObject
     public bool IsNull() => assm is null;
     public string getLocation => assm.Location;
 
-    public IList<Instruction> GetInstructions(string className, string method)
+    public void Execute(Action<MethodInfo> action, string[] input)
     {
-        return assm.GetType(className).GetMethod(method).GetInstructions();
+        action(assm.GetType(input[0]).GetMethod(input[1]));
     }
 }

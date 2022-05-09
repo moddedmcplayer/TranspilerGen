@@ -8,7 +8,7 @@ namespace TranspilerGen.Handlers
 {
     public class SelectorHandler
     {
-        public List<TypeInfo> types;
+        public List<Type> types;
         public List<MethodInfo> methods;
         public List<string> getLetters()
         {
@@ -23,12 +23,12 @@ namespace TranspilerGen.Handlers
         
         public string[] getClasses(char character)
         {
-            types = new List<TypeInfo>();
-            foreach (var type in GenInfo.ModdedAssembly.GetTypes().Where(x => x.FullName[0].ToString().ToUpper() == character.ToString().ToUpper()))
+            types = new List<Type>();
+            foreach (var type in GenInfo.ModdedAssembly.GetTypes().Where(x => x.FullName.StartsWith(character.ToString(), true, null)))
             {
-                if(!types.Contains(type.GetTypeInfo()))
+                if(!types.Contains(type))
                 {
-                    types.Add(type.GetTypeInfo());
+                    types.Add(type);
                 }
             }
             return types.ConvertAll(x => x.FullName).ToArray();

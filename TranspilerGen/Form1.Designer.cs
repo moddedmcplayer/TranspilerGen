@@ -57,7 +57,7 @@ namespace TranspilerGen
             this.MethodSelector.Items.Clear();
             this.MethodSelector.Items.AddRange(Program.SelectorHandler.getMethods(GenInfo.ModdedAssembly.GetType((string)this.ClassSelector.SelectedItem).GetTypeInfo()));
             this.MethodSelector.Visible = true;
-            GenInfo.Class = Program.SelectorHandler.types[this.ClassSelector.SelectedIndex];
+            GenInfo.Class = GenInfo.ModdedAssembly.GetType((string)this.ClassSelector.SelectedItem).GetTypeInfo();
         }
 
         #region Windows Form Designer generated code

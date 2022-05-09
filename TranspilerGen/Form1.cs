@@ -16,6 +16,12 @@ namespace TranspilerGen
             InitializeComponent();
         }
 
+        private void Form_Closed(object sender, EventArgs e)
+        {
+            if (File.Exists("ILCode(dont edit).txt"))
+                File.Delete("ILCode(dont edit).txt");
+        }
+        
         private void Startbutton_Click(object sender, EventArgs e)
         {
             Program.ButtonHandler.StartbuttonClick(sender, e, Startbutton);
@@ -44,7 +50,7 @@ namespace TranspilerGen
 
         private void Form1_Load(object sender, EventArgs e)
         {
-            //ignore lol
+            this.FormClosed += Form_Closed;
         }
 
         private void FilePathTextbox1_TextChanged(object sender, EventArgs e)
@@ -112,17 +118,15 @@ namespace TranspilerGen
         
         private void SaveButton_Click(object sender, EventArgs e)
         {
-            if (!File.Exists("Config.txt"))
-                File.Create("Config.txt");
-            TextWriter tw = new StreamWriter("Config.txt");
+            TextWriter tw = new StreamWriter("Config.txt", false);
             
             if(GenInfo.IsValid())
             {
                 tw.WriteLine(this.FilePathTextbox1.Text);
                 tw.WriteLine(this.FilePathTextbox2.Text);
                 tw.WriteLine(this.LetterSelector.SelectedItem);
-                tw.WriteLine(Program.SelectorHandler.types[this.ClassSelector.SelectedIndex].FullName);
-                tw.WriteLine(Program.SelectorHandler.methods[this.MethodSelector.SelectedIndex].Name);
+                tw.WriteLine(GenInfo.Class.FullName);
+                tw.WriteLine(GenInfo.Method.Name);
             }
             
             tw.Close();
